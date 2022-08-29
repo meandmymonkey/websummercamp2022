@@ -2,6 +2,11 @@
 
 # Asynchronous Applications with Symfony
 
+### What is this?
+
+A temporary repository containing material for participants of the workshop
+[Asynchronous Applications with Symfony](https://2022.websummercamp.com/asynchronous-applications-with-symfony)
+at [Web Summer Camp 2022](https://2022.websummercamp.com/).
 
 ### Basic requirements:
 
@@ -16,9 +21,9 @@ to Docker or PHP on Windows.
 #### Knowledge: Docker on your OS
 
 You should feel comfortable using Docker and Docker Compose for local
-development. Most of the workshop steps will be automated, but when in doubt,
-you might be required to start and stop containers manually, and possibly edit
-port mappings or volumes.
+development. Most of the workshop steps involving docker will be automated,
+but when in doubt, you might be required to start and stop containers manually,
+and possibly edit port mappings or volumes.
 
 #### Knowledge: PHP
 
