@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+
+  redis:
+    ports:
+      - "8443:8443"
+      - "9443:9443"
+      - "6379:6379"
+
+  rabbitmq:
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  elasticsearch:
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+
+  php:
+    volumes:
+      - "./:/srv/app"
+    ports:
+      - "8000:8000"
+
+  mailer:
+    image: schickling/mailcatcher
+    ports:
+      - "1025:1025"
+      - "1080:1080"

@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+
+  redis:
+    image: redislabs/rejson:2.2.0
+
+  rabbitmq:
+    image: rabbitmq:3.9-management
+
+  elasticsearch:
+    image: elasticsearch:8.4.0
+
+  php:
+    image: meandmymonkey/ws-messenger-2022-php-cli:latest
