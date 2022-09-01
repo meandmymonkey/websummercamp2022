@@ -14,7 +14,16 @@ framework:
                     queues:
                         messages_airports: ~
 
+            aircraft:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    exchange:
+                        name: aircraft
+                    queues:
+                        messages_aircraft: ~
+
 
         routing:
             'App\Messages\Ping': ping
             'App\Messages\AirportData': airports
+            'App\Messages\AircraftData': aircraft

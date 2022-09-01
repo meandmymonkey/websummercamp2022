@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\AirTraffic\Infrastructure\Csv\AirportCsvReader;
+use App\AirTraffic\Infrastructure\Csv\AircraftCsvReader;
+use App\Messages\AircraftData;
 use App\Messages\AirportData;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -14,14 +15,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-#[AsCommand(name: 'app:import:airports')]
-class ImportAirportsCommand extends Command
+#[AsCommand(name: 'app:import:aircraft', description: 'Imports aircraft data from CSV')]
+class ImportAircraftCommand extends Command
 {
-    public function __construct(
-        private readonly AirportCsvReader $csvReader,
-        private readonly MessageBusInterface $messageBus,
-        private readonly LockFactory $lockFactory
-    ) {
+    public function __construct(private AircraftCsvReader $aircraftCsvReader, private MessageBusInterface $messageBus, private LockFactory $lockFactory)
+    {
         parent::__construct();
     }
 
@@ -29,9 +27,9 @@ class ImportAirportsCommand extends Command
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $lock = $this->lockFactory->createLock('lock://import-airports', 600);
+        $lock = $this->lockFactory->createLock('lock://import-aircraft', 600);
         if (!$lock->acquire()) {
-            $ui->error('Another import seems to be running, aborting');
+            $ui->error('Another import seems to be in progress, aborting.');
 
             return Command::FAILURE;
         }
@@ -40,18 +38,18 @@ class ImportAirportsCommand extends Command
         $ui->progressStart();
 
         $batchData = [];
-        $batchSize = 50;
-        foreach ($this->csvReader->entries() as $airport) {
-            $batchData[] = $airport;
+        $batchSize = 100;
+        foreach ($this->aircraftCsvReader->entries() as $aircraftData) {
+            $batchData[] = $aircraftData;
             if (count($batchData) >= $batchSize) {
-                $this->messageBus->dispatch(new AirportData($batchData));
+                $this->messageBus->dispatch(new AircraftData($batchData));
                 $batchData = [];
                 $ui->progressAdvance($batchSize);
             }
         }
 
         if (count($batchData)) {
-            $this->messageBus->dispatch(new AirportData($batchData));
+            $this->messageBus->dispatch(new AircraftData($batchData));
         }
 
         $ui->progressFinish();
@@ -61,5 +59,4 @@ class ImportAirportsCommand extends Command
 
         return Command::SUCCESS;
     }
-
 }
