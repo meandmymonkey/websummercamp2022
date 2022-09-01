@@ -180,3 +180,10 @@ _________________
 - https://symfonycasts.com/screencast/messenger
 - https://www.rabbitmq.com/documentation.html
 
+_________________
+
+# Other URLs
+
+- http://127.0.0.1:15672 (user: guest, pwd: guest)
+- http://127.0.0.1:9200/aircraft/_stats
+- http://127.0.0.1:9200/airports/_stats
