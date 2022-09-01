@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\AirTraffic\Infrastructure\Csv\AirportCsvReader;
+use App\Messages\AirportData;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -30,7 +31,7 @@ class ImportAirportsCommand extends Command
         $ui->progressStart();
 
         foreach ($this->csvReader->entries() as $airport) {
-            $this->messageBus->dispatch($airport);
+            $this->messageBus->dispatch(new AirportData($airport));
             $ui->progressAdvance();
         }
 

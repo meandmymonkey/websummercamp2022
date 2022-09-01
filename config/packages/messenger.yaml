@@ -6,7 +6,7 @@ framework:
             ping:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
 
-            aircraft:
+            airports:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
                     exchange:
@@ -17,3 +17,4 @@ framework:
 
         routing:
             'App\Messages\Ping': ping
+            'App\Messages\AirportData': airports
