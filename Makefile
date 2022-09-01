@@ -9,7 +9,7 @@ stop: ## Stops docker environment
 	docker-compose stop
 
 cli: ## Enters the PHP CLI
-	docker-compose run -i --rm php /bin/bash
+	docker-compose run --rm php /bin/bash
 
 pulse: ## Runs application heartbeat for 10 minutes
 	bin/console app:pulse --time-limit=600
