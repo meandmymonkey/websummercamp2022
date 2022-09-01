@@ -6,6 +6,16 @@ framework:
             ping:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
 
+            heartbeat:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    exchange:
+                        name: pulse
+                    queues:
+                        pulse_transponder_updates: ~
+                        pulse_airport_updates: ~
+                        pulse_aircraft_updates: ~
+
             airports:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
@@ -44,3 +54,4 @@ framework:
             'App\Messages\AircraftData': aircraft
             'App\Messages\IncomingTransponderStatus': transponders
             'App\Messages\TrafficUpdate': traffic_events
+            'App\Messages\Heartbeat': heartbeat
