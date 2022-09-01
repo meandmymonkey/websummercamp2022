@@ -12,4 +12,5 @@ services:
     image: elasticsearch:8.4.0
 
   php:
+    build: .
     image: meandmymonkey/ws-messenger-2022-php-cli:latest

@@ -62,7 +62,7 @@ attending the workshop - better yet, before even travelling to the conference:
 - Run `docker-compose up`
 - You can stop the environment using `docker-compose stop` once everything is pulled and running
 
-#### Optional: when using macOS 
+#### Optional: when using macOS
 
 You can improve performance on macOS by working with PHP locally, and running
 only the infrastructure in Docker. **This is entirely optional.**
@@ -70,5 +70,113 @@ only the infrastructure in Docker. **This is entirely optional.**
 If you want to do so, you will need some stuff in addition to Docker and Docker Compose:
 
 - A local PHP 8.1 including `ext-amqp`, `ext-json`, `ext-iconv`, `ext-pcntl`, `ext-ctype`
-- Composer (https://getcomposer.org/) 
+- Composer (https://getcomposer.org/)
 - The Symfony CLI (https://symfony.com/download)
+
+_________________
+
+# Exercises
+
+**Too challenging?** All things we do during the workshop will be pushed to this repository so you can catch up after every challenge.
+
+**Bored, too easy?** Take a look at the optional challenges and the free-form challenges in the last part of this section and go nuts.
+
+## Challenge 0 (Warmup)
+
+Write a command that sends a "Ping" and a handler that receives and logs it. Try synchronous & asynchronous setups.
+
+## Challenge 1
+
+**Import Aircraft.** Use the `AircraftCsvReader` service to retrieve records of raw data and send them into a queue from a new Symfony command you write.
+
+Write a handler that consumes the messages, converts the data in to `Aircraft` using the `AircraftReader` service. Pass them to the `AircraftUpdater`.
+
+**Import Airports.** Same procedure as for aircraft.
+
+**Optional:** Try out different counts of workers. Try out different sizes of batches. What is the fastest setup?
+
+## Challenge 2
+
+Write a command pulling in transponder data every 10 seconds. Send the data into a queue.
+
+Write a handler receiving the data and log them.
+
+## Challenge 3
+
+Change the handler from the last challenge: Feed the transponder data into the `TransponderStatusUpdater` and log the resulting `TrafficEvent`s.
+
+## Challenge 4
+
+Push the TrafficEvents into yet another queue and turn them into notifications AND into a log file, in two separate handlers.
+
+## Challenge n+1 (things to try if you're bored, in no particular order)
+
+- Refactor the command pulling the transponder updates into a message handler. Trigger it with a pulse event (message) from a new command. Make the message self-destruct when not consumed to prevent piling up.
+- Use the live API instead of recorded data. Steps: Set `TRANSPONDER_URL` to your personal url with HTTP Basic Auth, and run the app in the `prod` environment.
+- Use the Symfony Lock component to secure imports, pulse command etc. from running in parallel. 
+- Get creative with the `App\AirTraffic\Domain\TransponderStatusChecker` and `App\AirTraffic\DomainTrafficEvent` interfaces - extend the application to display other types of traffic events, like close passes, extreme height changes, etc.
+- Use a fanout exchange to use the pulse event for multiple tasks (like re-triggering Aircraft and Airport imports on a schedule).
+- Use supervisord and docker to setup a new "consumer container" running several workers.
+- Create a reference ID when pulling transponder data and attach it to all messages using a custom stamp - log their complete lifecycle.
+- Send emails on touchdowns at selected airports (using Symfony Notifier or directly using the Mailer).
+
+_________________
+
+# Class Reference
+
+Don't worry, everything in this project not directly concerned with async operations
+comes pre-built! All required services are autowired by Symfony and are ready
+to use. Here is a reference:
+
+## Core Services to interact with
+
+`App\AirTraffic\DataImport\TransponderStatusReader`: Pulls in the latest
+transponder data. Gives you a collection of new `TransponderStatus`.
+
+`App\AirTraffic\TransponderStatusUpdater`: Takes one or more `TransponderStatus`
+and yields `TrafficEvent`s (like takeoffs and touchdowns).
+
+## Importing static data
+
+`App\AirTraffic\AircraftReader` and `App\AirTraffic\AirportReader` Accept arrays of
+raw data and convert them to `Aircraft` and `Airport`s.
+
+`App\AirTraffic\AircraftUpdater` and `App\AirTraffic\AirportUpdater` store the data
+provided by `AircraftReader` and `AirportReader`.
+
+## Traffic participants
+
+All classes implement `TrafficEvent`.
+
+`App\AirTraffic\Domain\Aircraft`: A DTO containing various info about an aircraft.
+This is static data we are going to import.
+
+`App\AirTraffic\Domain\Airport`: Same for an airport.
+This is static data we are going to import.
+
+`App\AirTraffic\Domain\TransponderStatus`: A DTO for data sent by a flight transponder.
+Contains position and metadata. Identified by a unique ICAO24 code, which relates it
+to the `Aircraft` above. This is dynamic data we will consume when our app is running.
+
+## Things happening
+
+`App\AirTraffic\Domain\TrafficEvent\NewTransponder`: A new Transponder has entered
+our airspace. This DTO contains all the details, including the `Aircraft`.
+
+`App\AirTraffic\Domain\TrafficEvent\Takeoff`: A plane has taken off. Comes with
+an `Aircraft` and an `Airport`.
+
+`App\AirTraffic\Domain\TrafficEvent\Touchdown`: A plane has landed. Comes with
+an `Aircraft` and an `Airport`.
+
+_________________
+
+# Documentation
+
+- https://opensky-network.org/
+- https://openskynetwork.github.io/opensky-api/
+- https://symfony.com/doc/current/messenger.html
+- https://symfony.com/doc/current/components/messenger.html
+- https://symfonycasts.com/screencast/messenger
+- https://www.rabbitmq.com/documentation.html
+
