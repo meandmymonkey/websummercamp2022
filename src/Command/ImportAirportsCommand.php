@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Command;
+namespace App\Command;
 
 use App\AirTraffic\Infrastructure\Csv\AirportCsvReader;
 use Symfony\Component\Console\Attribute\AsCommand;
