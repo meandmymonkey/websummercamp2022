@@ -58,7 +58,7 @@ from huge downloads, please make sure you prepare the following steps before
 attending the workshop - better yet, before even travelling to the conference:
 
 - Install a current version of Docker and Docker Compose
-- Clone this repository (https://github.com/meandmymonkey/ws-messenger-2022)
+- Clone this repository (https://github.com/meandmymonkey/websummercamp2022)
 - Run `docker-compose up`
 - You can stop the environment using `docker-compose stop` once everything is pulled and running
 
