@@ -17,7 +17,7 @@ use Symfony\Component\Lock\LockInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsCommand(name: 'app:pulse', description: 'Sends messages to trigger application flow')]
-final class EmitPulse extends Command implements SignalableCommandInterface
+final class EmitPulseCommand extends Command implements SignalableCommandInterface
 {
     private LockInterface $lock;
     private bool $aborting = false;
