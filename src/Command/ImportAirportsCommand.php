@@ -30,9 +30,15 @@ class ImportAirportsCommand extends Command
         $ui->info('Starting import...');
         $ui->progressStart();
 
+        $batchData = [];
+        $batchSize = 50;
         foreach ($this->csvReader->entries() as $airport) {
-            $this->messageBus->dispatch(new AirportData($airport));
-            $ui->progressAdvance();
+            $batchData[] = $airport;
+            if (count($batchData) >= $batchSize) {
+                $this->messageBus->dispatch(new AirportData($batchData));
+                $batchData = [];
+                $ui->progressAdvance($batchSize);
+            }
         }
 
         $ui->progressFinish();

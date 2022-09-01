@@ -16,7 +16,7 @@ class ImportAirportsHandler
 
     public function __invoke(AirportData $airportData): void
     {
-        $reader = new AirportReader(array($airportData->data));
+        $reader = new AirportReader($airportData->data);
 
         ($this->airportUpdater)(...$reader->airports());
     }
