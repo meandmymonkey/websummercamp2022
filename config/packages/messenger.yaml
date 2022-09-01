@@ -29,9 +29,18 @@ framework:
                         name: transponders
                     queues:
                         messages_transponders: ~
+            traffic_events:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    exchange:
+                        name: airtraffic
+                    queues:
+                        messages_events: ~
 
 
         routing:
             'App\Messages\Ping': ping
             'App\Messages\AirportData': airports
             'App\Messages\AircraftData': aircraft
+            'App\Messages\IncomingTransponderStatus': transponders
+            'App\Messages\TrafficUpdate': traffic_events
