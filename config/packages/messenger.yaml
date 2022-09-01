@@ -22,6 +22,14 @@ framework:
                     queues:
                         messages_aircraft: ~
 
+            transponders:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    exchange:
+                        name: transponders
+                    queues:
+                        messages_transponders: ~
+
 
         routing:
             'App\Messages\Ping': ping
