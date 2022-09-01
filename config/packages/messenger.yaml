@@ -2,6 +2,9 @@ framework:
     messenger:
 
         transports:
-            sync: 'sync://'
+
+            ping:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%/ping'
 
         routing:
+            'App\Messages\Ping': ping
