@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace App\Command;
+namespace Command;
 
 use App\AirTraffic\Infrastructure\Csv\AirportCsvReader;
-use App\Message\AirportBatchData;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-#[AsCommand(name: 'app:import:airports', description: 'Imports basic airport data')]
-class ImportAirports extends Command
+#[AsCommand(name: 'app:import:airports')]
+class ImportAirportsCommand extends Command
 {
-    public function __construct(private AirportCsvReader $airportCsvReader, private MessageBusInterface $messageBus)
-    {
+    public function __construct(
+        private readonly AirportCsvReader $csvReader,
+        private readonly MessageBusInterface $messageBus
+    ) {
         parent::__construct();
     }
 
@@ -29,11 +29,15 @@ class ImportAirports extends Command
         $ui->info('Starting import...');
         $ui->progressStart();
 
-        // ...
+        foreach ($this->csvReader->entries() as $airport) {
+            $this->messageBus->dispatch($airport);
+            $ui->progressAdvance();
+        }
 
         $ui->progressFinish();
         $ui->success('... done.');
 
         return Command::SUCCESS;
     }
+
 }

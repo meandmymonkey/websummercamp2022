@@ -4,7 +4,16 @@ framework:
         transports:
 
             ping:
-                dsn: '%env(MESSENGER_TRANSPORT_DSN)%/ping'
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+
+            aircraft:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                options:
+                    exchange:
+                        name: airports
+                    queues:
+                        messages_airports: ~
+
 
         routing:
             'App\Messages\Ping': ping
